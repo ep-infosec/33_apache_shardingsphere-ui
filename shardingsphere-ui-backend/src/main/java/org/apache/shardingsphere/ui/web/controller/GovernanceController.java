@@ -1,0 +1,87 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.ui.web.controller;
+
+import org.apache.shardingsphere.ui.common.dto.InstanceDTO;
+import org.apache.shardingsphere.ui.common.dto.ReadDataSourceDTO;
+import org.apache.shardingsphere.ui.servcie.GovernanceService;
+import org.apache.shardingsphere.ui.web.response.ResponseResult;
+import org.apache.shardingsphere.ui.web.response.ResponseResultUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collection;
+
+/**
+ * RESTful API of governance operation.
+ */
+@RestController
+@RequestMapping("/api/governance")
+public final class GovernanceController {
+    
+    @Autowired
+    private GovernanceService governanceService;
+    
+    /**
+     * Load all instances.
+     *
+     * @return response result
+     */
+    @RequestMapping(value = "/instance", method = RequestMethod.GET)
+    public ResponseResult<Collection<InstanceDTO>> loadAllInstances() {
+        return ResponseResultUtil.build(governanceService.getALLInstance());
+    }
+    
+    /**
+     * update instance status.
+     *
+     * @param instanceDTO instance DTO
+     * @return response result
+     */
+    @RequestMapping(value = "/instance", method = RequestMethod.PUT)
+    public ResponseResult updateInstanceStatus(@RequestBody final InstanceDTO instanceDTO) {
+        governanceService.updateInstanceStatus(instanceDTO.getInstanceId(), instanceDTO.isEnabled());
+        return ResponseResultUtil.success();
+    }
+    
+    /**
+     * Load all read data sources.
+     *
+     * @return response result
+     */
+    @RequestMapping(value = "/datasource", method = RequestMethod.GET)
+    public ResponseResult<Collection<ReadDataSourceDTO>> loadAllReadDataSources() {
+        return ResponseResultUtil.build(governanceService.getAllReadDataSource());
+    }
+    
+    /**
+     * Update read data source status.
+     *
+     * @param readDataSourceDTO read data source DTO
+     * @return response result
+     */
+    @RequestMapping(value = "/datasource", method = RequestMethod.PUT)
+    public ResponseResult updateReadDataSourceStatus(@RequestBody final ReadDataSourceDTO readDataSourceDTO) {
+        governanceService.updateReadDataSourceStatus(readDataSourceDTO.getSchema(), readDataSourceDTO.getReadDataSourceName(), readDataSourceDTO.isEnabled());
+        return ResponseResultUtil.success();
+    }
+    
+}
